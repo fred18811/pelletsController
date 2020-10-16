@@ -1,0 +1,42 @@
+<html>
+    <head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>ESP8266 Settings Pechka</title>
+		<link rel="stylesheet" href="style.css" >
+		<script type="text/javascript" src="function.js"> </script>
+    </head>
+    <body>
+        <div id="pechkasettings" class="main">
+            <h1>Setting Pechka</h1>
+            <form method="POST" action="savepechka" enctype="multipart/form-data">
+                <div class="navbarform">
+                    <div>
+                        <label for="timerClear">Время работы мотора очистки (сек): </label>
+                        <input name="timerClear" id="timerClear" value="" >
+                    </div>
+                    <div>
+                        <label for="timerShnek" >Время работы шнека (сек): </label>	  
+                        <input name="timerShnek" id="timerShnek" value="" >
+                    </div>
+                    <div>
+                        <label for="timerSvecha">Время работы свечи (сек): </label>
+                        <input name="timerSvecha" id="timerSvecha" value="" >
+                    </div>
+                    <div>
+                        <label for="timerVent">Время работы вентилятора после отключения печки (мин): </label>
+                        <input name="timerVent" id="timerVent" value="" >
+                    </div>
+                    <div>
+                        <label for="maxTemp">Максимальна температура работы котла (C): </label>
+                        <input name="maxTemp" id="maxTemp" value="" >
+                    </div>
+                    <div>
+                        <input type="SUBMIT" value="Save" id="send">
+                        <a href='/'>Back</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
