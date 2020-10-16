@@ -14,7 +14,6 @@
 #include <MyClassPechka.h>
 
 
-
 String version_prosh ="0.2b";            //---------------------Версия прошивки
 
 
@@ -303,4 +302,6 @@ void loop() {
       pechka.stopRele("fotosensor");
     }
   }
+
+  
 }

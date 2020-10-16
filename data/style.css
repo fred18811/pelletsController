@@ -36,6 +36,7 @@ bode{
 .navbar div a{
     color: black;
     text-decoration: none;
+    display: block;
 }
 
 .navbarform div input[type="SUBMIT"], .navbarform div a{
