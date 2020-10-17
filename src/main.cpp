@@ -12,12 +12,14 @@
 #include <webserverfunc.h>
 #include <MyClassWachDog.h>
 #include <MyClassPechka.h>
+#include <MyClassNextion.h>
 
 
 String version_prosh ="0.2b";            //---------------------Версия прошивки
 
 
 Pechka pechka(cooler, moto_shnek, pomp, moto_clear, svecha, fotosensor, cur_shnek, cur_pump, cur_clear, cur_svecha, suh_cont, suh_cont_fotosensor, suh_cont_smog, termistr_temp);
+MyNextion myNextion(Serial);
 
 //--------------------------------------------------------------WachDog--------------------------------------------------------------------------------------------
 MyWachDog wachdog(whatchdog);
@@ -278,7 +280,9 @@ void loop() {
     client.loop();
   }
 
+  myNextion.loop();
   wachdog.loop();
+
   if(pechka.extinguishFire()){}
   else if(!pechka.extinguishFire() && pechka.getStatuFire() && !pechka.getStatusWorkPechka()) {
     pechka.setStatuFire(false);
@@ -303,5 +307,5 @@ void loop() {
     }
   }
 
-  
+
 }
