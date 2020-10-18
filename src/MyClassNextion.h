@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <future>
 
 class MyNextion{
     private:
@@ -11,8 +12,7 @@ class MyNextion{
         String data_param="";
         String data_value="";
 
-        void getDataUart(){
-
+        bool getDataUart(){
             if(_serial.available() > 0) {
                 uint8_t inn = _serial.read();
                 if(inn == 35){
@@ -23,10 +23,13 @@ class MyNextion{
                     incStr += (char)inn;
                 }
                 else if(serialReadFlag && inn == 59){
-                    AnalyseString(incStr);
-                    serialReadFlag = false;
+                    if(AnalyseString(incStr)){
+                         serialReadFlag = false;
+                         return true;
+                    };
                 }
             }
+            return false;
         }
 
         bool AnalyseString(String incStr) {
@@ -37,10 +40,10 @@ class MyNextion{
                 if(incStr[i]== 61){
                     stringReadFlag=true;
                 }
-                if(!stringReadFlag){
+                if(!stringReadFlag && incStr[i]!= 61){
                     data_param += incStr[i];
                     if(data_param=="switch") switshflag=true;
-                }else if(stringReadFlag){
+                }else if(stringReadFlag && incStr[i]!= 61){
                     data_value += incStr[i];
                 }
             }
@@ -52,9 +55,11 @@ class MyNextion{
             _serial = serial;
         }
         void loop(){
-            getDataUart();
+            if(getDataUart()){
+
+            };
         }
-        void sendDataToNextion(String data,String val){
+        void sendDataToNextionStr(String data,String val){
             _serial.print(data);
             _serial.print("=");
             _serial.print("\""+ val +"\"");
@@ -62,7 +67,6 @@ class MyNextion{
             _serial.write(0xff);
             _serial.write(0xff);
         }
-
         void sendDataToNextionVal(String data,String val){
             _serial.print(data);
             _serial.print("=");

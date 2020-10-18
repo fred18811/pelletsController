@@ -199,7 +199,7 @@ class Pechka{
                 }
         }
         void setMaxTempVal(int val){maxtemp_val = val;}
-        int getMacTempVal(){return maxtemp_val;}
+        int getMaxTempVal(){return maxtemp_val;}
 
         bool getStatuFire() {return flagFire;}
         void setStatuFire(bool val) { flagFire = false;}

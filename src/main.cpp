@@ -286,18 +286,16 @@ void loop() {
   if(pechka.extinguishFire()){}
   else if(!pechka.extinguishFire() && pechka.getStatuFire() && !pechka.getStatusWorkPechka()) {
     pechka.setStatuFire(false);
-    }
+  }
   else if (!pechka.extinguishFire() && !pechka.getStatuFire()){
-    if(pechka.getStatusWorkPechka() && pechka.getTemp() < pechka.getMacTempVal())
+    if(pechka.getStatusWorkPechka() && pechka.getTemp() < pechka.getMaxTempVal())
     {
       pechka.startRele("clear");
       pechka.startRele("shnek");
       pechka.startRele("svecha");
       pechka.startRele("cooler",true);
       pechka.startRele("fotosensor");
-    }
-    else if (!pechka.getStatusWorkPechka() || pechka.getTemp() > pechka.getMacTempVal())
-    {
+    }else if (!pechka.getStatusWorkPechka() || pechka.getTemp() > pechka.getMaxTempVal()){
       pechka.stopRele("clear");
       pechka.startRele("cooler");
       pechka.stopRele("cooler");
