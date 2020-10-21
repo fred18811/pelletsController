@@ -54,10 +54,14 @@ class MyNextion{
         MyNextion(HardwareSerial & serial){
             _serial = serial;
         }
-        void loop(){
-            if(getDataUart()){
-
-            };
+        bool loop(){
+             return getDataUart();
+        }
+        String getDataParam(){
+            return data_param;
+        }
+        String getDataValue(){
+            return data_value;
         }
         void sendDataToNextionStr(String data,String val){
             _serial.print(data);

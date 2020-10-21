@@ -13,6 +13,7 @@ class Pechka{
 //----------------------------------------
         bool count_cooler = 0;
         bool flagFire = false;
+        bool flagWorkPechkaStop = false;
 
         bool cooler_value = false;
         bool shnek_value = false;
@@ -24,13 +25,15 @@ class Pechka{
         bool btn1 = HIGH;
         bool bounce_btn = 0;
 
+        double delta_termistr = 0;
+
         int cooler_pech;
         int moto_shnek_pech;
         int pomp_pech;
         int moto_clear_pech;
         int svecha_pech;
         int fotosensor_pech;
-        int termistr_temp_pech;
+        int termistr_temp_pech = 0;
 
         int cur_shnek_pech;
         int cur_pump_pech;
@@ -198,6 +201,9 @@ class Pechka{
                 return false;
                 }
         }
+        void stopPechcka(){
+                flagWorkPechkaStop =true;
+        }
         void setMaxTempVal(int val){maxtemp_val = val;}
         int getMaxTempVal(){return maxtemp_val;}
 
@@ -249,7 +255,7 @@ class Pechka{
                 bounce_btn = 0;
                 btn1 = digitalRead(suh_cont_pech) ;
             }
-            if(digitalRead(suh_cont_pech) && !bounce_btn) return false;
+            if(digitalRead(suh_cont_pech) && !bounce_btn || flagWorkPechkaStop) return false;
             else if(!digitalRead(suh_cont_pech) && !bounce_btn)  return true;
         }
 
@@ -261,9 +267,12 @@ class Pechka{
             else return true;
         }
         double getTemp(){
-            return tempterm.GetAverageTemp(analogRead(termistr_temp_pech));
+            return (tempterm.GetAverageTemp(analogRead(termistr_temp_pech))- delta_termistr);
         }
 //---------------------------Set time Rele--------------------------------------------
+        void setDeltaTemp(double delta_termistr_in){
+            delta_termistr = delta_termistr_in;
+        }
         bool setTimeRele(String name, unsigned long val){
             if (name == "cooler"){
                 timer_cooler.setValueTime(val);
@@ -336,8 +345,13 @@ class Pechka{
                 return 0;
             }
             else if (name == "shnek"){
-                if(timer_shnek.startTimer()) setValueRele("shnek","on");
-                else if(!timer_shnek.startTimer()) setValueRele("shnek","off");
+                if(timer_shnek.startTimer()){ 
+                    setValueRele("shnek","on");
+                    }
+                else if(!timer_shnek.startTimer()){ 
+                    setValueRele("shnek","off");
+                    return 0;
+                    }
                 return 1;
             }
             else if (name == "clear"){

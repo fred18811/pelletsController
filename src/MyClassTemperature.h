@@ -12,7 +12,7 @@ class TempTermistr
         double Vs = 3.3;        // supply voltage
         double Beta = 3950.0;  // Beta value
         double Ro = 10000.0;   // Resistance of Thermistor at 25 degree Celsius
-
+/*
         double GetTempFromTermistor(int termistor) {
             adc = termistor;
             Vout = adc * Vs/adcMax;
@@ -20,6 +20,19 @@ class TempTermistr
             T = 1/(1/To + log(Rt/Ro)/Beta);
             Tc = T - 273.15; 
             return Tc;
+        }
+*/
+        double GetTempFromTermistor(int termistor) {
+            adc = termistor;
+            Vout = Beta / adc -1;
+            Vout = R1/Vout;
+            Rt = Vout / Ro;
+            Rt = log(Rt);
+            Rt /= Beta;
+            Rt += 1.0 /(25 + 273.15);
+            Rt = 1.0/Rt;
+            Rt -= 273.15;
+            return Rt;
         }
     public:
         

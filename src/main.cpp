@@ -17,7 +17,6 @@
 
 String version_prosh ="0.2b";            //---------------------Версия прошивки
 
-
 Pechka pechka(cooler, moto_shnek, pomp, moto_clear, svecha, fotosensor, cur_shnek, cur_pump, cur_clear, cur_svecha, suh_cont, suh_cont_fotosensor, suh_cont_smog, termistr_temp);
 MyNextion myNextion(Serial);
 
@@ -68,14 +67,16 @@ void setup() {
         pechka.setTimeRele("cooler",ulong(pechkaBuf["timerVent"]));    //--Установка времени работы кулер
         pechka.setTimeRele("shnek",ulong(pechkaBuf["timerShnek"]));    //--Установка времени работы шнек
         pechka.setTimeRele("svecha",ulong(pechkaBuf["timerSvecha"]));    //--Установка времени работы свеча
-        pechka.setMaxTempVal(ulong(pechkaBuf["temval"]));          //Установка максимольной температуры работы печьки
+        pechka.setMaxTempVal(ulong(pechkaBuf["maxTemp"]));               //Установка максимольной температуры работы печьки
+        pechka.setDeltaTemp(double(pechkaBuf["deltaTempval"]));
        }
-      else{
+      else{                               //--По умолчанию
         pechka.setTimeRele("clear",3);    //--Установка времени работы очистителя
         pechka.setTimeRele("cooler",10);    //--Установка времени работы кулер
         pechka.setTimeRele("shnek",10);    //--Установка времени работы шнек
         pechka.setTimeRele("svecha",120);    //--Установка времени работы свеча
         pechka.setMaxTempVal(70);          //Установка максимольной температуры работы печьки
+        pechka.setDeltaTemp(0);
       }
      confFile.close();
 
@@ -280,8 +281,9 @@ void loop() {
     client.loop();
   }
 
-  myNextion.loop();
   wachdog.loop();
+
+//---------------------------work pellets controller--------------------------------------------------------------
 
   if(pechka.extinguishFire()){}
   else if(!pechka.extinguishFire() && pechka.getStatuFire() && !pechka.getStatusWorkPechka()) {
@@ -291,10 +293,20 @@ void loop() {
     if(pechka.getStatusWorkPechka() && pechka.getTemp() < pechka.getMaxTempVal())
     {
       pechka.startRele("clear");
-      pechka.startRele("shnek");
       pechka.startRele("svecha");
       pechka.startRele("cooler",true);
       pechka.startRele("fotosensor");
+
+      if(pechka.getStatusFotosensor())
+      {
+        if(pechka.startRele("shnek")){
+        }else{
+          pechka.stopPechcka();
+        }
+      }else{
+        pechka.stopRele("shnek");
+      }
+
     }else if (!pechka.getStatusWorkPechka() || pechka.getTemp() > pechka.getMaxTempVal()){
       pechka.stopRele("clear");
       pechka.startRele("cooler");
@@ -305,5 +317,30 @@ void loop() {
     }
   }
 
+//----------------------work Uart-------------------------------------------------------------------
+  if(myNextion.loop()){
+    if(myNextion.getDataParam() == "state"){
+
+      Serial.println(pechka.getStatusWorkPechka());
+      Serial.println(String(pechka.getTemp())+"C");
+      Serial.println(String(pechka.getMaxTempVal())+"C");
+      Serial.println(pechka.getStatusRele("cooler"));
+      /*
+      myNextion.sendDataToNextionStr("temp.txt",String(pechka.getTemp())+"C");
+
+      if(pechka.getStatusWorkPechka()){
+        myNextion.sendDataToNextionVal("work.pic","1");
+      }else{
+        myNextion.sendDataToNextionVal("work.pic","2");
+      }
+
+      if(pechka.getStatusFotosensor()){
+        myNextion.sendDataToNextionVal("controlPellets.pic","1");
+      }else{
+        myNextion.sendDataToNextionVal("controlPellets.pic","2");
+      }
+    */
+    }
+  };
 
 }

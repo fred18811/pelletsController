@@ -42,6 +42,7 @@ String handleSaveSettingPechka(ArduinoJson6161_11::StaticJsonDocument<400u> pech
   webPage += "<body style=\"text-align: center;\">";
 
  File pechkaFile = SPIFFS.open ("/configpechka.json","w");
+      if(request->arg("deltaTempval")!="")pechkaBuf["deltaTempval"] = request->arg("deltaTempval");
       if(request->arg("timerClear")!="")pechkaBuf["timerClear"] = request->arg("timerClear");
       if(request->arg("timerShnek")!="")pechkaBuf["timerShnek"] = request->arg("timerShnek");
       if(request->arg("timerSvecha")!="")pechkaBuf["timerSvecha"] = request->arg("timerSvecha");
