@@ -230,6 +230,7 @@ class Pechka{
             else if (name=="fotosensor"){
                 return fotosensor_value;
             }
+            else return false;
         }
 //--------------------------------------------------------------------------------------------------------------
         double getCurShnek(){
@@ -255,7 +256,7 @@ class Pechka{
                 bounce_btn = 0;
                 btn1 = digitalRead(suh_cont_pech) ;
             }
-            if(digitalRead(suh_cont_pech) && !bounce_btn || flagWorkPechkaStop) return false;
+            if((digitalRead(suh_cont_pech) && !bounce_btn) || flagWorkPechkaStop) return false;
             else if(!digitalRead(suh_cont_pech) && !bounce_btn)  return true;
         }
 

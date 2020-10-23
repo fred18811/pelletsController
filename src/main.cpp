@@ -321,26 +321,29 @@ void loop() {
   if(myNextion.loop()){
     if(myNextion.getDataParam() == "state"){
 
-      Serial.println(pechka.getStatusWorkPechka());
-      Serial.println(String(pechka.getTemp())+"C");
-      Serial.println(String(pechka.getMaxTempVal())+"C");
-      Serial.println(pechka.getStatusRele("cooler"));
-      /*
       myNextion.sendDataToNextionStr("temp.txt",String(pechka.getTemp())+"C");
 
-      if(pechka.getStatusWorkPechka()){
-        myNextion.sendDataToNextionVal("work.pic","1");
-      }else{
-        myNextion.sendDataToNextionVal("work.pic","2");
-      }
+      if(pechka.getStatusRele("cooler")) myNextion.sendDataToNextionVal("cooler.pic","1");
+      else myNextion.sendDataToNextionVal("cooler.pic","2");
 
-      if(pechka.getStatusFotosensor()){
-        myNextion.sendDataToNextionVal("controlPellets.pic","1");
-      }else{
+      if(pechka.getStatusRele("shnek")) myNextion.sendDataToNextionVal("shnek.pic","1");
+      else myNextion.sendDataToNextionVal("shnek.pic","2");
+
+      if(pechka.getStatusRele("clear")) myNextion.sendDataToNextionVal("clear.pic","1");
+      else myNextion.sendDataToNextionVal("clear.pic","2");
+
+      if(pechka.getStatusRele("svecha")) myNextion.sendDataToNextionVal("cabdle.pic","1");
+      else myNextion.sendDataToNextionVal("cabdle.pic","2");
+
+      if(pechka.getStatusFotosensor()) myNextion.sendDataToNextionVal("controlPellets.pic","1");
+      else myNextion.sendDataToNextionVal("controlPellets.pic","2");
+
+      if(pechka.getStatusWorkPechka()) myNextion.sendDataToNextionVal("work.pic","1");
+      else{ 
         myNextion.sendDataToNextionVal("controlPellets.pic","2");
-      }
-    */
-    }
-  };
+        myNextion.sendDataToNextionVal("work.pic","2");
+        }
 
+    }
+  }
 }
