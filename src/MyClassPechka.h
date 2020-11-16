@@ -1,16 +1,24 @@
 #include <Arduino.h>
 #include <MyClassTemperature.h>
 #include <MyClassTimer.h>
+#include <OneWire.h>
 
 class Pechka{
     private:
-        TempTermistr tempterm;
+
+        TempSensor tempterm;
 //--------------Timer---------------------
         MyTimer timer_clear;
         MyTimer timer_cooler;
         MyTimer timer_shnek;
         MyTimer timer_svecha;
+        MyTimer timer_sensor_ds;
+
+        long lastUpdateTime = 0;
+        const int TEMP_UPDATE_TIME = 1000;
+        float temperature = 0;
 //----------------------------------------
+
         bool count_cooler = 0;
         bool flagFire = false;
         bool flagWorkPechkaStop = false;
@@ -33,7 +41,7 @@ class Pechka{
         int moto_clear_pech;
         int svecha_pech;
         int fotosensor_pech;
-        int termistr_temp_pech = 0;
+        uint8_t temp_sensor_pech = 23;
 
         int cur_shnek_pech;
         int cur_pump_pech;
@@ -145,9 +153,35 @@ class Pechka{
             }
             else return 0;
         }
+        void getTempDS(){
+            OneWire ds(temp_sensor_pech);
+            byte data[12];
+            byte i;
+            ds.reset();
+            ds.write(0xCC);
+            ds.write(0x44);
 
+            if (millis() - lastUpdateTime > TEMP_UPDATE_TIME)
+            {
+                lastUpdateTime = millis();
+                ds.reset();
+                ds.write(0xCC);
+                ds.write(0xBE);
+                for ( i = 0; i < 9; i++)
+                {
+                data[i] = ds.read();
+                }
+                // Convert the data to actual temperature
+                int16_t raw = (data[1] << 8) | data[0];
+                byte cfg = (data[4] & 0x60);
+                if (cfg == 0x00) raw = raw & ~7; // 9 bit resolution, 93.75 ms
+                else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
+                else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
+                temperature = (float)raw / 16.0;
+            }
+        }
     public:
-        Pechka(int cooler_in, int moto_shnek_in, int pump_in, int moto_clear_in, int svecha_in, int fotosensor_in, int cur_shnek_in, int cur_pump_in, int cur_clear_in, int cur_svecha_in, int suh_cont_in, int suh_cont_fotosensor_in, int suh_cont_smog_in, int termistr_temp_in)
+        Pechka(int cooler_in, int moto_shnek_in, int pump_in, int moto_clear_in, int svecha_in, int fotosensor_in, int cur_shnek_in, int cur_pump_in, int cur_clear_in, int cur_svecha_in, int suh_cont_in, int suh_cont_fotosensor_in, int suh_cont_smog_in, uint8_t temp_sensor_in)
         {
             cooler_pech = cooler_in;
             moto_shnek_pech = moto_shnek_in;
@@ -162,8 +196,7 @@ class Pechka{
             suh_cont_pech = suh_cont_in;
             suh_cont_fotosensor_pech = suh_cont_fotosensor_in; 
             suh_cont_smog_pech = suh_cont_smog_in;
-            termistr_temp_pech = termistr_temp_in;
-
+            temp_sensor_pech = temp_sensor_in;
         }
         void startPechka()                                    //---Инициализация портов
         {
@@ -184,6 +217,9 @@ class Pechka{
             digitalWrite(moto_clear_pech, LOW);
             digitalWrite(svecha_pech, LOW);
             digitalWrite(fotosensor_pech, LOW);
+        }
+        void loop(){
+            getTempDS();
         }
         bool extinguishFire(){
             if (getStatusSmog()) {
@@ -267,8 +303,14 @@ class Pechka{
             if(digitalRead(suh_cont_smog_pech)) return false;
             else return true;
         }
-        double getTemp(){
-            return (tempterm.GetAverageTemp(analogRead(termistr_temp_pech))- delta_termistr);
+        
+        double getTemp(String val){
+            if(val == "term")
+                return (tempterm.GetAverageTemp(analogRead(temp_sensor_pech))- delta_termistr);
+            else if(val == "ds")
+                return temperature;
+            else
+                return -127;
         }
 //---------------------------Set time Rele--------------------------------------------
         void setDeltaTemp(double delta_termistr_in){

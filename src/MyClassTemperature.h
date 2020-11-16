@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-class TempTermistr 
+class TempSensor
 {
     private:
         const double R1 = 12000.0;   // voltage divider resistor value
@@ -12,16 +12,7 @@ class TempTermistr
         double Vs = 3.3;        // supply voltage
         double Beta = 3950.0;  // Beta value
         double Ro = 10000.0;   // Resistance of Thermistor at 25 degree Celsius
-/*
-        double GetTempFromTermistor(int termistor) {
-            adc = termistor;
-            Vout = adc * Vs/adcMax;
-            Rt = R1 * Vout / (Vs - Vout);
-            T = 1/(1/To + log(Rt/Ro)/Beta);
-            Tc = T - 273.15; 
-            return Tc;
-        }
-*/
+
         double GetTempFromTermistor(int termistor) {
             adc = termistor;
             Vout = Beta / adc -1;
@@ -34,8 +25,8 @@ class TempTermistr
             Rt -= 273.15;
             return Rt;
         }
+    
     public:
-        
         double GetAverageTemp(int temp){
             for (int i=0; i< 10; i++) {
                 samples[i] = GetTempFromTermistor(temp);

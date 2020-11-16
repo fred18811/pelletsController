@@ -8,10 +8,10 @@
 #define cur_pump 39                 // ток помпа
 #define cur_clear 32                // ток очистка
 #define cur_svecha 33               // ток свеча
-#define termistr_temp 36            // датчик температуры
+#define sensor_temp 23              // датчик температуры
 #define QRB1 35                     // датчик огня
 #define suh_cont 25                 // сух. контакт
 #define suh_cont_fotosensor 15      // сух. контакт фотосенсор
 #define suh_cont_smog 4             // сух. контакт датчик дыма
 #define whatchdog 5                 // wochdog
-#define btn_reset 0                 // reset
+#define btn_reset 23                // reset

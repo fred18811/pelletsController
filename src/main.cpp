@@ -14,10 +14,9 @@
 #include <MyClassPechka.h>
 #include <MyClassNextion.h>
 
-
 String version_prosh ="0.2b";            //---------------------Версия прошивки
 
-Pechka pechka(cooler, moto_shnek, pomp, moto_clear, svecha, fotosensor, cur_shnek, cur_pump, cur_clear, cur_svecha, suh_cont, suh_cont_fotosensor, suh_cont_smog, termistr_temp);
+Pechka pechka(cooler, moto_shnek, pomp, moto_clear, svecha, fotosensor, cur_shnek, cur_pump, cur_clear, cur_svecha, suh_cont, suh_cont_fotosensor, suh_cont_smog, sensor_temp);
 MyNextion myNextion(Serial);
 
 //--------------------------------------------------------------WachDog--------------------------------------------------------------------------------------------
@@ -120,6 +119,7 @@ void setup() {
                             else{Serial.print(".");}
                         }
                         else{
+                            Serial.println("reboot awp");
                             File netFile = SPIFFS.open ("/config.json","r");
                             if(netFile && netFile.size()){
                                netBuf["wifimode"] = false;
@@ -282,7 +282,7 @@ void loop() {
   }
 
   wachdog.loop();
-
+  pechka.loop();
 //---------------------------work pellets controller--------------------------------------------------------------
 
   if(pechka.extinguishFire()){}
@@ -290,7 +290,7 @@ void loop() {
     pechka.setStatuFire(false);
   }
   else if (!pechka.extinguishFire() && !pechka.getStatuFire()){
-    if(pechka.getStatusWorkPechka() && pechka.getTemp() < pechka.getMaxTempVal())
+    if(pechka.getStatusWorkPechka() && pechka.getTemp("ds") < pechka.getMaxTempVal())
     {
       pechka.startRele("clear");
       pechka.startRele("svecha");
@@ -307,7 +307,7 @@ void loop() {
         pechka.stopRele("shnek");
       }
 
-    }else if (!pechka.getStatusWorkPechka() || pechka.getTemp() > pechka.getMaxTempVal()){
+    }else if (!pechka.getStatusWorkPechka() || pechka.getTemp("ds") > pechka.getMaxTempVal()){
       pechka.stopRele("clear");
       pechka.startRele("cooler");
       pechka.stopRele("cooler");
@@ -318,11 +318,11 @@ void loop() {
   }
 
 //----------------------work Uart-------------------------------------------------------------------
-/*
+
   if(myNextion.loop()){
     if(myNextion.getDataParam() == "state"){
 
-      myNextion.sendDataToNextionStr("temp.txt",String(pechka.getTemp())+"C");
+      myNextion.sendDataToNextionStr("temp.txt",String(pechka.getTemp("ds"))+"C");
 
       if(pechka.getStatusRele("cooler")) myNextion.sendDataToNextionVal("cooler.pic","1");
       else myNextion.sendDataToNextionVal("cooler.pic","2");
@@ -344,9 +344,8 @@ void loop() {
         myNextion.sendDataToNextionVal("controlPellets.pic","2");
         myNextion.sendDataToNextionVal("work.pic","2");
         }
-
     }
   }
-*/
+
 
 }
