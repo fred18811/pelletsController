@@ -41,6 +41,8 @@ int count_WIFI = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+AsyncEventSource events("/events");
 
 StaticJsonDocument<400> netBuf;
 StaticJsonDocument<400> pechkaBuf;
@@ -139,6 +141,10 @@ void setup() {
                    Serial.println(WiFi.localIP());
     
     // --------------------------------------------------------------Настройка WEB--------------------------------------------------------------------------------------------
+
+                    ws.onEvent(onEvent);
+                    server.addHandler(&ws);
+                    server.addHandler(&events);
 
                     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=10");
 

@@ -1,5 +1,9 @@
 window.addEventListener("load",loader);
 function loader() {	
+    var websocket;
+    initWebSocket();
+
+
     if(document.getElementById("ethsettings") || document.getElementById("main")){
         let request_settings = fetch("config.json",{'Cache-Control': 'no-cache'});
         request_settings
@@ -87,3 +91,24 @@ function checkChecked(e) {
         }
     }       
 }
+function initWebSocket() {
+    var host_name = window.location.hostname;
+    var gateway = "ws://" + host_name + "/ws";
+    console.log('Trying to open a WebSocket connection...');
+    console.log(gateway);
+    websocket = new WebSocket(gateway);
+    websocket.onopen    = onOpen;
+    websocket.onclose   = onClose;
+    websocket.onmessage = onMessage; // <-- add this line
+  }
+  function onOpen(event) {
+    console.log(event.data)
+    console.log('Connection opened');
+  }
+  function onClose(event) {
+    console.log('Connection closed');
+    setTimeout(initWebSocket, 2000);
+  }
+  function onMessage(event) {
+    console.log(event.data)
+  }

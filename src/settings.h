@@ -14,4 +14,4 @@
 #define suh_cont_fotosensor 15      // сух. контакт фотосенсор
 #define suh_cont_smog 4             // сух. контакт датчик дыма
 #define whatchdog 5                 // wochdog
-#define btn_reset 23                // reset
+#define btn_reset 22                // reset

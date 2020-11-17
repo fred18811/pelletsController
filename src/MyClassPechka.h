@@ -2,7 +2,7 @@
 #include <MyClassTemperature.h>
 #include <MyClassTimer.h>
 #include <OneWire.h>
-
+OneWire ds;
 class Pechka{
     private:
 
@@ -13,9 +13,7 @@ class Pechka{
         MyTimer timer_shnek;
         MyTimer timer_svecha;
         MyTimer timer_sensor_ds;
-
-        long lastUpdateTime = 0;
-        const int TEMP_UPDATE_TIME = 1000;
+        MyTimer timer_temp;
         float temperature = 0;
 //----------------------------------------
 
@@ -154,30 +152,33 @@ class Pechka{
             else return 0;
         }
         void getTempDS(){
-            OneWire ds(temp_sensor_pech);
             byte data[12];
             byte i;
-            ds.reset();
-            ds.write(0xCC);
-            ds.write(0x44);
-
-            if (millis() - lastUpdateTime > TEMP_UPDATE_TIME)
+            if(timer_temp.startTimer()){}
+            else
             {
-                lastUpdateTime = millis();
-                ds.reset();
-                ds.write(0xCC);
-                ds.write(0xBE);
-                for ( i = 0; i < 9; i++)
+                if(ds.reset())
                 {
-                data[i] = ds.read();
+                    ds.write(0xCC);
+                    ds.write(0x44);
+                    ds.reset();
+                    ds.write(0xCC);
+                    ds.write(0xBE);
+                    for ( i = 0; i < 9; i++)
+                    {
+                        data[i] = ds.read();
+                    }
+                    int16_t raw = (data[1] << 8) | data[0];
+                    byte cfg = (data[4] & 0x60);
+                    if (cfg == 0x00) raw = raw & ~7;
+                    else if (cfg == 0x20) raw = raw & ~3;
+                    else if (cfg == 0x40) raw = raw & ~1;
+                    temperature = (float)raw / 16.0;
+
+                    timer_temp.stopTimer();
                 }
-                // Convert the data to actual temperature
-                int16_t raw = (data[1] << 8) | data[0];
-                byte cfg = (data[4] & 0x60);
-                if (cfg == 0x00) raw = raw & ~7; // 9 bit resolution, 93.75 ms
-                else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
-                else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
-                temperature = (float)raw / 16.0;
+                else
+                    temperature = -127;
             }
         }
     public:
@@ -197,6 +198,8 @@ class Pechka{
             suh_cont_fotosensor_pech = suh_cont_fotosensor_in; 
             suh_cont_smog_pech = suh_cont_smog_in;
             temp_sensor_pech = temp_sensor_in;
+            ds.begin(temp_sensor_pech);                       //--Устанавливаем в ds18b20 пин 
+            timer_temp.setValueTime(2);                       //--Устанавливаем таймер
         }
         void startPechka()                                    //---Инициализация портов
         {
