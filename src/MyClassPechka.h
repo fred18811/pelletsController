@@ -2,7 +2,11 @@
 #include <MyClassTemperature.h>
 #include <MyClassTimer.h>
 #include <OneWire.h>
+#include <ArduinoJson.h>
+
 OneWire ds;
+StaticJsonDocument<400> dataBuf;
+
 class Pechka{
     private:
 
@@ -13,9 +17,12 @@ class Pechka{
         MyTimer timer_shnek;
         MyTimer timer_svecha;
         MyTimer timer_sensor_ds;
-        MyTimer timer_temp;
-        float temperature = 0;
+        MyTimer timer_data_json;
+        MyTimer timer_send_event;
+        //float temperature = 0;
 //----------------------------------------
+        uint8_t sec_timer_temp = 1;
+        uint8_t sec_timer_events = 5;
 
         bool count_cooler = 0;
         bool flagFire = false;
@@ -151,34 +158,39 @@ class Pechka{
             }
             else return 0;
         }
-        void getTempDS(){
+        float getTempDS(){
             byte data[12];
             byte i;
-            if(timer_temp.startTimer()){}
-            else
+            if(ds.reset())
             {
-                if(ds.reset())
+                ds.write(0xCC);
+                ds.write(0x44);
+                ds.reset();
+                ds.write(0xCC);
+                ds.write(0xBE);
+                for ( i = 0; i < 9; i++)
                 {
-                    ds.write(0xCC);
-                    ds.write(0x44);
-                    ds.reset();
-                    ds.write(0xCC);
-                    ds.write(0xBE);
-                    for ( i = 0; i < 9; i++)
-                    {
-                        data[i] = ds.read();
-                    }
-                    int16_t raw = (data[1] << 8) | data[0];
-                    byte cfg = (data[4] & 0x60);
-                    if (cfg == 0x00) raw = raw & ~7;
+                    data[i] = ds.read();
+                }
+                int16_t raw = (data[1] << 8) | data[0];
+                byte cfg = (data[4] & 0x60);
+                if (cfg == 0x00) raw = raw & ~7;
                     else if (cfg == 0x20) raw = raw & ~3;
                     else if (cfg == 0x40) raw = raw & ~1;
-                    temperature = (float)raw / 16.0;
-
-                    timer_temp.stopTimer();
-                }
-                else
-                    temperature = -127;
+                    return (float)raw / 16.0;
+            }
+            else{
+                return -127;
+            }
+        }
+        void setDataToJson(){
+            if(timer_data_json.startTimer()){}
+            else{
+            dataBuf["cur_shnek"] = getCurShnek();
+            dataBuf["cur_svecha"] = getCurSvecha();
+            dataBuf["digit_temp"] = getTempDS();
+            //dataBuf["digit_fire"] = getCurClear();
+            timer_data_json.stopTimer();
             }
         }
     public:
@@ -199,7 +211,8 @@ class Pechka{
             suh_cont_smog_pech = suh_cont_smog_in;
             temp_sensor_pech = temp_sensor_in;
             ds.begin(temp_sensor_pech);                       //--Устанавливаем в ds18b20 пин 
-            timer_temp.setValueTime(2);                       //--Устанавливаем таймер
+            timer_data_json.setValueTime(sec_timer_temp);                       //--Устанавливаем таймер оброботки датчика температуры
+            timer_send_event.setValueTime(sec_timer_events);                 //--Устанавливаем таймер отправки данных клиенту
         }
         void startPechka()                                    //---Инициализация портов
         {
@@ -222,7 +235,7 @@ class Pechka{
             digitalWrite(fotosensor_pech, LOW);
         }
         void loop(){
-            getTempDS();
+            setDataToJson();
         }
         bool extinguishFire(){
             if (getStatusSmog()) {
@@ -284,7 +297,13 @@ class Pechka{
         double getCurSvecha(){
             return getAverageCur(analogRead(cur_shnek_pech));
         }
+        String getDataFromDigitals(){
+            String val1 = dataBuf["cur_shnek"];
+            String val2 = dataBuf["cur_svecha"];
+            String val3 = dataBuf["digit_temp"];
 
+            return "cur_shnek:" + val1 + ";cur_svecha:" + val2 + ";digit_temp:" + val3;
+        }
         bool getStatusWorkPechka(){
             unsigned long endtime = 0 ;
             if (! bounce_btn && btn1 != digitalRead(suh_cont_pech)) {
@@ -311,9 +330,18 @@ class Pechka{
             if(val == "term")
                 return (tempterm.GetAverageTemp(analogRead(temp_sensor_pech))- delta_termistr);
             else if(val == "ds")
-                return temperature;
+                return dataBuf["digit_temp"];
             else
                 return -127;
+        }
+
+        bool startTimerEvents(){
+            if(timer_send_event.startTimer()){}
+            else{
+                timer_send_event.stopTimer();
+                return 1;
+            }
+            return 0;
         }
 //---------------------------Set time Rele--------------------------------------------
         void setDeltaTemp(double delta_termistr_in){

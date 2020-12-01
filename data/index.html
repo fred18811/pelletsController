@@ -2,7 +2,7 @@
 	<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Conroller main</title>
+    <title>Главное меню</title>
 	<link rel="stylesheet" href="style.css" >
 	<script type="text/javascript" src="function.js"> </script>
     </head>
@@ -10,15 +10,37 @@
             <div id="main" class="main">
                 <div>
 				    <div style="margin-top:12px;">
-				        <div><p style="text-align:end;">Version <span id="version_prosh"></span></p></div>
+				        <div><p style="text-align:end;">Версия <span id="version_prosh"></span></p></div>
 				    </div>
             </div>
             <div class="navbar">
-                <div><a class="btn btn-secondary btn-lg" role="button" href="setting">Setting Ethernet</a></div>
-				<div><a class="btn btn-secondary btn-lg" role="button" href="settingmqtt">Setting MQTT</a></div>
-				<div><a class="btn btn-secondary btn-lg" role="button" href="settingpechka">Setting Pechka</a></div>
-				<div><a class="btn btn-secondary btn-lg" role="button" href="update">Firmware Update</a></div>
+                <div><a class="btn btn-secondary btn-lg" role="button" href="setting">Настройка сети</a></div>
+				<div><a class="btn btn-secondary btn-lg" role="button" href="settingmqtt">Настройка MQTT</a></div>
+				<div><a class="btn btn-secondary btn-lg" role="button" href="settingcontroller">Настройка контроллера</a></div>
+				<div><a class="btn btn-secondary btn-lg" role="button" href="update">Обновление прошивки</a></div>
             </div>
+            </div>
+            <div class="statisticval">
+                    <div>
+                        <label for="deltaTempval">Ток шнека: </label>
+                        <input name="deltaTempval" id="cur_shnek" value="0" disabled>
+                    </div>
+                    <div>
+                        <label for="deltaTempval">Ток свечи: </label>
+                        <input name="deltaTempval" id="cur_svecha" value="0" disabled>
+                    </div>
+                    <div>
+                        <label for="deltaTempval">Ток очистки: </label>
+                        <input name="deltaTempval" id="cur_clear" value="0" disabled>
+                    </div>
+                    <div>
+                        <label for="deltaTempval">Датчик температуры: </label>
+                        <input name="deltaTempval" id="digit_temp" value="0" disabled>
+                    </div>
+                    <div>
+                        <label for="deltaTempval">Датчик огня: </label>
+                        <input name="deltaTempval" id="digit_fire" value="0" disabled>
+                    </div>
             </div>
 		</body>
 </html>

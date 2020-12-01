@@ -1,8 +1,18 @@
 window.addEventListener("load",loader);
-function loader() {	
-    var websocket;
-    initWebSocket();
-
+function loader() {
+    if(document.title == "Главное меню"){
+        let data ={}
+        let host_name = window.location.hostname;
+        var gateway = "ws://" + host_name + "/ws";
+        let websocket = new WebSocket(gateway);
+        websocket.onmessage = function(event){
+            for (i of event.data.split(";")){
+                let val =  i.split(":");
+                if(document.getElementById(val[0]))
+                    document.getElementById(val[0]).value = parseFloat(val[1]).toFixed(2);
+            }
+        };
+    }
 
     if(document.getElementById("ethsettings") || document.getElementById("main")){
         let request_settings = fetch("config.json",{'Cache-Control': 'no-cache'});
@@ -91,24 +101,3 @@ function checkChecked(e) {
         }
     }       
 }
-function initWebSocket() {
-    var host_name = window.location.hostname;
-    var gateway = "ws://" + host_name + "/ws";
-    console.log('Trying to open a WebSocket connection...');
-    console.log(gateway);
-    websocket = new WebSocket(gateway);
-    websocket.onopen    = onOpen;
-    websocket.onclose   = onClose;
-    websocket.onmessage = onMessage; // <-- add this line
-  }
-  function onOpen(event) {
-    console.log(event.data)
-    console.log('Connection opened');
-  }
-  function onClose(event) {
-    console.log('Connection closed');
-    setTimeout(initWebSocket, 2000);
-  }
-  function onMessage(event) {
-    console.log(event.data)
-  }

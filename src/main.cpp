@@ -42,7 +42,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
-AsyncEventSource events("/events");
+//AsyncEventSource events("/events");
 
 StaticJsonDocument<400> netBuf;
 StaticJsonDocument<400> pechkaBuf;
@@ -142,9 +142,9 @@ void setup() {
     
     // --------------------------------------------------------------Настройка WEB--------------------------------------------------------------------------------------------
 
-                    ws.onEvent(onEvent);
+                    ws.onEvent(onWsEvent);
                     server.addHandler(&ws);
-                    server.addHandler(&events);
+                    //server.addHandler(&events);
 
                     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=10");
 
@@ -154,8 +154,8 @@ void setup() {
                     server.on("/settingmqtt", HTTP_ANY, [](AsyncWebServerRequest *request){
                       request->send(SPIFFS, "/settingmqtt.html", "text/html");
                     });
-                    server.on("/settingpechka", HTTP_ANY, [](AsyncWebServerRequest *request){
-                      request->send(SPIFFS, "/settingpechka.html", "text/html");
+                    server.on("/settingcontroller", HTTP_ANY, [](AsyncWebServerRequest *request){
+                      request->send(SPIFFS, "/settingcontroller.html", "text/html");
                     });
                     server.on("/style.css", HTTP_ANY, [](AsyncWebServerRequest *request){
                       request->send(SPIFFS, "/style.css", "text/css");
@@ -289,6 +289,12 @@ void loop() {
 
   wachdog.loop();
   pechka.loop();
+
+//------------------------отправка данных клиенту вебсокет-------------------------------------------------------
+  if(pechka.startTimerEvents()){
+    ws.textAll(pechka.getDataFromDigitals());
+    }
+
 //---------------------------work pellets controller--------------------------------------------------------------
 
   if(pechka.extinguishFire()){}
@@ -324,7 +330,6 @@ void loop() {
   }
 
 //----------------------work Uart-------------------------------------------------------------------
-
   if(myNextion.loop()){
     if(myNextion.getDataParam() == "state"){
 
@@ -352,6 +357,4 @@ void loop() {
         }
     }
   }
-
-
 }

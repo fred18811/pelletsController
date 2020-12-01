@@ -66,6 +66,29 @@ bode{
     background: rgba(0,0,0,0.2);
     color: white;
 }
+.statisticval{
+    border: black 1px solid;
+    margin: 5px 5px;
+    padding: 5px 10px;
+    box-shadow: 5px 5px 0px rgba(240,200,0,0.2);
+    display: grid;
+    justify-content: center;
+}
+.statisticval div {
+    margin: 2px;
+}
+.statisticval div label{
+    display: inline;
+}
+.statisticval div input{
+    display: inline;
+    border: none;
+}
+.statisticval div input:focus, .statisticval div input:hover, .statisticval div input:active, .statisticval div input:disabled{
+    background-color: white;
+    border: none;
+    outline:none;
+}
 label{
     display: block;
 }
