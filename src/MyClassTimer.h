@@ -9,30 +9,8 @@ class MyTimer{
         bool timer_initialization = true;
 
     public:
-        MyTimer(unsigned long val = 1)
-        {
-            value = val;
-        }
-        void setValueTime(unsigned long val){
-            value = val;
-        }
-        bool startTimer(){
-            if(timer_initialization){
-                timing = millis();
-                timer_initialization = false;
-            }
-            if(timer_work)
-            {
-                if (millis() - timing > value*1000){
-                    timer_work = false;
-                    return false;
-                }
-                else return true;
-            }
-            else return false;
-        }
-        void stopTimer(){
-            timer_work = true;
-            timer_initialization = true;
-        }
+        MyTimer(unsigned long val = 1); //По умолчанию таймер на 1сек
+        void setValueTime(unsigned long val); //Установить колличество секунд таймера
+        bool startTimer(); //Запускаем таймер, пока идет отчет возвращает false, по завершению true
+        void stopTimer(); //Сбрасываем таймер
 };

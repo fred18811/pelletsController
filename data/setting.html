@@ -2,7 +2,7 @@
 	<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Conroller Settings</title>
+    <title>Настройки сети</title>
 	<link rel="stylesheet" href="style.css" >
 	<script type="text/javascript" src="function.js"> </script>
     </head>
@@ -11,6 +11,18 @@
                 <h1>Настройки сети</h1>
                 <form method="POST" action="saveether" enctype='multipart/form-data'>
                     <div class="navbarform">
+                        <div>
+                             <label for='SSDP_Name'>SSDP_Name: </label>
+                             <input name="SSDP_Name" id='SSDP_Name' value="esp8266">
+                        </div>
+                        <div>
+                            <label for='ssid'>WIFI ssid: </label>
+                            <input name="ssid" id='ssid' required>
+                        </div>
+                        <div>
+                            <label for='pswd'>WIFI pass: </label>
+                            <input type ="password" name="pswd" id='pswd' required>
+                        </div>
                         <div>
                             <label for="dhsp">DHCP server:</label>
                             <select id="dhsp" name="dhsp">
@@ -33,6 +45,9 @@
                         <div>
                             <input type="SUBMIT" value="Сохранить" id="send">
                             <a href='/'>Назад</a>
+                        </div>
+                        <div>
+                            <a href='/clearflash'>Format File System</a>
                         </div>
                     </div>
                 </form> 

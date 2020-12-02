@@ -19,10 +19,9 @@ class Pechka{
         MyTimer timer_sensor_ds;
         MyTimer timer_data_json;
         MyTimer timer_send_event;
-        //float temperature = 0;
 //----------------------------------------
         uint8_t sec_timer_temp = 1;
-        uint8_t sec_timer_events = 5;
+        uint8_t sec_timer_events = 3;
 
         bool count_cooler = 0;
         bool flagFire = false;
@@ -64,7 +63,8 @@ class Pechka{
             double state_value = ((2500.0-(cur_value/4096.0*4000.0))/100)-0.78;
             return  state_value>0?state_value:0 ;
         }
-        double getAverageCur(double cur_state){
+        double getAverageCur(double cur_state)
+        {
             double val=0;
             for(int i = 0 ; i<10;i++){
                 val+=getCurValue(cur_state);
@@ -188,6 +188,7 @@ class Pechka{
             else{
             dataBuf["cur_shnek"] = getCurShnek();
             dataBuf["cur_svecha"] = getCurSvecha();
+            dataBuf["cur_clear"] = getCurClear();
             dataBuf["digit_temp"] = getTempDS();
             //dataBuf["digit_fire"] = getCurClear();
             timer_data_json.stopTimer();
@@ -300,9 +301,10 @@ class Pechka{
         String getDataFromDigitals(){
             String val1 = dataBuf["cur_shnek"];
             String val2 = dataBuf["cur_svecha"];
-            String val3 = dataBuf["digit_temp"];
+            String val3 = dataBuf["cur_clear"];
+            String val4 = dataBuf["digit_temp"];
 
-            return "cur_shnek:" + val1 + ";cur_svecha:" + val2 + ";digit_temp:" + val3;
+            return "cur_shnek:" + val1 + ";cur_svecha:" + val2 + ";cur_clear:" + val3 + ";digit_temp:" + val4;
         }
         bool getStatusWorkPechka(){
             unsigned long endtime = 0 ;
@@ -334,7 +336,6 @@ class Pechka{
             else
                 return -127;
         }
-
         bool startTimerEvents(){
             if(timer_send_event.startTimer()){}
             else{
