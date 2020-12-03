@@ -1,6 +1,7 @@
 #define cooler 14                   // реле кулер
-#define moto_shnek 12               // реле шнек
-#define pomp 2                      // реле помпа
+#define moto_shnek 21               // реле шнек
+#define moto_shnek_revers 2         // реле шнек
+#define pomp 19                     // реле помпа
 #define moto_clear 27               // реле очистка
 #define svecha 26                   // реле свеча
 #define fotosensor 13               // реле фотосенсор

@@ -71,8 +71,8 @@ String handleSaveSettingEth(ArduinoJson6161_11::StaticJsonDocument<400u> netBuf,
       File configFile = SPIFFS.open ("/config.json","w");
       if(!configFile)Serial.println("File open failed");
       else{
-
-      netBuf["wifimode"] = true;
+      
+      if(request->arg("wifimode")!="")netBuf["wifimode"] = request->arg("wifimode");
       netBuf["mqtton"] = true;
       netBuf["SSDP_Name"] = request->arg("SSDP_Name");
       netBuf["ssid"] = request->arg("ssid");

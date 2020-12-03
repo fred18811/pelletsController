@@ -64,7 +64,6 @@ void SoftAP_init(void){
         IPAddress myIP = WiFi.softAPIP();
         Serial.print("AP IP address: ");
         Serial.println(myIP);
-        Serial.println("HTTP server started");  
      }
 //-------------------------------------------------------------Timer-----------------------------------
 void Timer(){

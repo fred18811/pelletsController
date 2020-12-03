@@ -12,6 +12,20 @@
                 <form method="POST" action="saveether" enctype='multipart/form-data'>
                     <div class="navbarform">
                         <div>
+                            <label for="wifimode">AP wifi:</label>
+                            <select id="wifimode" name="wifimode">
+                                <option value="Off">Off</option>
+                                <option value="On">On</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="dhsp">DHCP server:</label>
+                            <select id="dhsp" name="dhsp">
+                                <option value="Off">Off</option>
+                                <option value="On">On</option>
+                            </select>
+                        </div>
+                        <div>
                              <label for='SSDP_Name'>SSDP_Name: </label>
                              <input name="SSDP_Name" id='SSDP_Name' value="esp8266">
                         </div>
@@ -22,13 +36,6 @@
                         <div>
                             <label for='pswd'>WIFI pass: </label>
                             <input type ="password" name="pswd" id='pswd' required>
-                        </div>
-                        <div>
-                            <label for="dhsp">DHCP server:</label>
-                            <select id="dhsp" name="dhsp">
-                                <option value="Off">Off</option>
-                                <option value="On">On</option>
-                            </select>
                         </div>
                         <div>
                             <label for="ip">IP addres: </label>
