@@ -12,6 +12,7 @@ class Pechka{
 
         TempSensor tempterm;
 //--------------Timer---------------------
+        MyTimer timer_start_controller;
         MyTimer timer_clear;
         MyTimer timer_cooler;
         MyTimer timer_shnek;
@@ -22,6 +23,7 @@ class Pechka{
 //----------------------------------------
         uint8_t sec_timer_temp = 1;
         uint8_t sec_timer_events = 3;
+        uint8_t sec_timer_start_controller = 2;
 
         bool count_cooler = 0;
         bool flagFire = false;
@@ -34,8 +36,8 @@ class Pechka{
         bool svecha_value = false;
         bool fotosensor_value = false;
 
-        bool btn1 = HIGH;
-        bool bounce_btn = 0;
+        bool state_btn = HIGH;
+        bool work_controller = false;
 
         double delta_termistr = 0;
 
@@ -214,6 +216,7 @@ class Pechka{
             ds.begin(temp_sensor_pech);                       //--Устанавливаем в ds18b20 пин 
             timer_data_json.setValueTime(sec_timer_temp);                       //--Устанавливаем таймер оброботки датчика температуры
             timer_send_event.setValueTime(sec_timer_events);                 //--Устанавливаем таймер отправки данных клиенту
+            timer_start_controller.setValueTime(sec_timer_start_controller);  //--Устанавливаем таймер определения включения или выключения контроллера
         }
         void startPechka()                                    //---Инициализация портов
         {
@@ -287,16 +290,16 @@ class Pechka{
         }
 //--------------------------------------------------------------------------------------------------------------
         double getCurShnek(){
-            return getAverageCur(analogRead(cur_shnek_pech));
+            return analogRead(cur_shnek_pech);
         }
         double getCurPump(){
             return getAverageCur(analogRead(cur_pump_pech));
         }
         double getCurClear(){
-            return getAverageCur(analogRead(cur_clear_pech));
+            return analogRead(cur_clear_pech);
         }
         double getCurSvecha(){
-            return getAverageCur(analogRead(cur_shnek_pech));
+            return analogRead(cur_svecha_pech);
         }
         String getDataFromDigitals(){
             String val1 = dataBuf["cur_shnek"];
@@ -306,18 +309,21 @@ class Pechka{
 
             return "cur_shnek:" + val1 + ";cur_svecha:" + val2 + ";cur_clear:" + val3 + ";digit_temp:" + val4;
         }
+
         bool getStatusWorkPechka(){
-            unsigned long endtime = 0 ;
-            if (! bounce_btn && btn1 != digitalRead(suh_cont_pech)) {
-                bounce_btn = 1;                               
-                endtime = millis();
+            if(state_btn != digitalRead(suh_cont_pech) && !flagWorkPechkaStop){
+                if (timer_start_controller.startTimer()) {
+                }
+                else{
+                    timer_start_controller.stopTimer();
+                    state_btn = digitalRead(suh_cont_pech) ;
+                    if(state_btn == HIGH) work_controller = false;
+                    else work_controller = true;
+                }
             }
-            else if ( bounce_btn && millis() - endtime >= 50 ) { 
-                bounce_btn = 0;
-                btn1 = digitalRead(suh_cont_pech) ;
-            }
-            if((digitalRead(suh_cont_pech) && !bounce_btn) || flagWorkPechkaStop) return false;
-            else if(!digitalRead(suh_cont_pech) && !bounce_btn)  return true;
+            else if(flagWorkPechkaStop) work_controller = false;
+            else timer_start_controller.stopTimer();
+            return work_controller;
         }
 
         bool getStatusFotosensor(){
@@ -350,7 +356,7 @@ class Pechka{
         }
         bool setTimeRele(String name, unsigned long val){
             if (name == "cooler"){
-                timer_cooler.setValueTime(val);
+                timer_cooler.setValueTime(60*val);
                 return 1;
             }
             else if (name == "shnek"){

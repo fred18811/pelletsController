@@ -65,7 +65,7 @@ void setup() {
      if(confFile && confFile.size()){
        deserializeJson(pechkaBuf, confFile);
         pechka.setTimeRele("clear",ulong(pechkaBuf["timerClear"]));    //--Установка времени работы очистителя
-        pechka.setTimeRele("cooler",ulong(pechkaBuf["timerVent"]));    //--Установка времени работы кулер
+        pechka.setTimeRele("cooler",ulong(pechkaBuf["timerVent"]));    //--Установка времени работы кулер после отключения контроллера
         pechka.setTimeRele("shnek",ulong(pechkaBuf["timerShnek"]));    //--Установка времени работы шнек
         pechka.setTimeRele("svecha",ulong(pechkaBuf["timerSvecha"]));    //--Установка времени работы свеча
         pechka.setMaxTempVal(ulong(pechkaBuf["maxTemp"]));               //Установка максимольной температуры работы печьки
@@ -234,7 +234,6 @@ void loop() {
     if(pechka.getStatusWorkPechka() && pechka.getTemp("ds") < pechka.getMaxTempVal())
     {
       pechka.startRele("clear");
-      pechka.startRele("svecha");
       pechka.startRele("cooler",true);
       pechka.startRele("fotosensor");
 
@@ -245,6 +244,7 @@ void loop() {
           pechka.stopPechcka();
         }
       }else{
+        pechka.startRele("svecha"); //дописать таймер на запуск свечи
         pechka.stopRele("shnek");
       }
 
