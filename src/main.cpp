@@ -14,7 +14,7 @@
 #include <MyClassPechka.h>
 #include <MyClassNextion.h>
 
-String version_prosh ="0.2b";            //---------------------Версия прошивки
+String version_prosh ="0.3b";            //---------------------Версия прошивки
 
 Pechka pechka(cooler, moto_shnek, pomp, moto_clear, svecha, fotosensor, cur_shnek, cur_pump, cur_clear, cur_svecha, suh_cont, suh_cont_fotosensor, suh_cont_smog, sensor_temp);
 MyNextion myNextion(Serial);
