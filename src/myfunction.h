@@ -65,6 +65,3 @@ void SoftAP_init(void){
         Serial.print("AP IP address: ");
         Serial.println(myIP);
      }
-//-------------------------------------------------------------Timer-----------------------------------
-void Timer(){
-}

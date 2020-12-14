@@ -7,36 +7,36 @@
 		<script type="text/javascript" src="function.js"> </script>
     </head>
     <body>
-        <div id="pechkasettings" class="main">
+        <div id="controllersettings" class="main">
             <h1>Настройки контроллера</h1>
             <form method="POST" action="savepechka" enctype="multipart/form-data">
                 <div class="navbarform">
                     <div>
-                        <label for="deltaTempval">Дельта температуры котла: </label>
-                        <input name="deltaTempval" id="deltaTempval" value="" >
+                        <label for="deltaTempval">Дельта температуры котла: (от -10 до 10)</label>
+                        <input type="number" name="deltaTempval" id="deltaTempval" value="0"  min="-10" max="10" step="1">
                     </div>
                     <div>
-                        <label for="timerClear">Время работы мотора очистки (сек): </label>
-                        <input name="timerClear" id="timerClear" value="" >
+                        <label for="timerClear">Время работы мотора очистки (сек): (от 1 до 1000)</label>
+                        <input type="number" name="timerClear" id="timerClear" value="1" min="1" max="1000" step="1">
                     </div>
                     <div>
-                        <label for="timerShnek" >Время работы шнека (сек): </label>	  
-                        <input name="timerShnek" id="timerShnek" value="" >
+                        <label for="timerShnek" >Время работы шнека (сек): (от 1 до 3000)</label>	  
+                        <input type="number" name="timerShnek" id="timerShnek" value="1" min="1" max="3000" step="1">
                     </div>
                     <div>
-                        <label for="timerSvecha">Время работы свечи (сек): </label>
-                        <input name="timerSvecha" id="timerSvecha" value="" >
+                        <label for="timerSvecha">Время работы свечи (сек): (от 1 до 1000)</label>
+                        <input type="number" name="timerSvecha" id="timerSvecha" value="1" min="1" max="1000" step="1">
                     </div>
                     <div>
-                        <label for="timerVent">Время работы вентилятора после отключения печки (мин): </label>
-                        <input name="timerVent" id="timerVent" value="" >
+                        <label for="timerVent">Время работы вентилятора после отключения печки (мин): (от 0 до 120)</label>
+                        <input type="number" name="timerVent" id="timerVent" value="0" min="0" max="120" step="1">
                     </div>
                     <div>
-                        <label for="maxTemp">Максимальна температура работы котла (C): </label>
-                        <input name="maxTemp" id="maxTemp" value="" >
+                        <label for="maxTemp">Максимальна температура работы котла (C): (от 30 до 80)</label>
+                        <input type="number" name="maxTemp" id="maxTemp" value="30" min="30" max="80" step="1">
                     </div>
                     <div>
-                        <input type="SUBMIT" value="Сохранить" id="send">
+                       <!-- <input type="SUBMIT" value="Сохранить" id="send"> -->
                         <a href='/'>Назад</a>
                     </div>
                 </div>

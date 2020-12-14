@@ -30,7 +30,7 @@ void handleSaveSettingMQTT(String webPage){
  // ESP.restart();
 }
 */
-//----------------------------------------------------------------Сохранение настроек Печки------------------------------------------------------------------------
+//----------------------------------------------------------------Сохранение настроек Контроллера------------------------------------------------------------------------
 String handleSaveSettingPechka(ArduinoJson6161_11::StaticJsonDocument<400u> pechkaBuf, AsyncWebServerRequest *request){
   String webPage = "";
   webPage += "<html>\
@@ -41,7 +41,7 @@ String handleSaveSettingPechka(ArduinoJson6161_11::StaticJsonDocument<400u> pech
  </head>";
   webPage += "<body style=\"text-align: center;\">";
 
- File pechkaFile = SPIFFS.open ("/configpechka.json","w");
+ File pechkaFile = SPIFFS.open ("/configcontroller.json","w");
       if(request->arg("deltaTempval")!="")pechkaBuf["deltaTempval"] = request->arg("deltaTempval");
       if(request->arg("timerClear")!="")pechkaBuf["timerClear"] = request->arg("timerClear");
       if(request->arg("timerShnek")!="")pechkaBuf["timerShnek"] = request->arg("timerShnek");

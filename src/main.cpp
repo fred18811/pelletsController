@@ -2,7 +2,7 @@
 #include <math.h>
 #include <SPIFFS.h>
 #include <WiFi.h>
-#include "ESPAsyncWebServer.h"
+#include <ESPAsyncWebServer.h>
 #include <ESP32httpUpdate.h>        //!!!!! под вопросом
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
@@ -47,7 +47,6 @@ AsyncWebSocket ws("/ws");
 StaticJsonDocument<400> netBuf;
 StaticJsonDocument<400> pechkaBuf;
 
-
 void setup() {
 
   pinMode(btn_reset, INPUT_PULLUP);
@@ -61,23 +60,13 @@ void setup() {
   
   if(SPIFFS.begin()){
     
-     File confFile = SPIFFS.open ("/configpechka.json","r+"); 
+     File confFile = SPIFFS.open ("/configcontroller.json","r+"); 
      if(confFile && confFile.size()){
-       deserializeJson(pechkaBuf, confFile);
-        pechka.setTimeRele("clear",ulong(pechkaBuf["timerClear"]));    //--Установка времени работы очистителя
-        pechka.setTimeRele("cooler",ulong(pechkaBuf["timerVent"]));    //--Установка времени работы кулер после отключения контроллера
-        pechka.setTimeRele("shnek",ulong(pechkaBuf["timerShnek"]));    //--Установка времени работы шнек
-        pechka.setTimeRele("svecha",ulong(pechkaBuf["timerSvecha"]));    //--Установка времени работы свеча
-        pechka.setMaxTempVal(ulong(pechkaBuf["maxTemp"]));               //Установка максимольной температуры работы печьки
-        pechka.setDeltaTemp(double(pechkaBuf["deltaTempval"]));
+        deserializeJson(pechkaBuf, confFile);
+        pechka.setTimerRele(pechkaBuf);
        }
       else{                               //--По умолчанию
-        pechka.setTimeRele("clear",3);    //--Установка времени работы очистителя
-        pechka.setTimeRele("cooler",10);    //--Установка времени работы кулер
-        pechka.setTimeRele("shnek",10);    //--Установка времени работы шнек
-        pechka.setTimeRele("svecha",120);    //--Установка времени работы свеча
-        pechka.setMaxTempVal(70);          //Установка максимольной температуры работы печьки
-        pechka.setDeltaTemp(0);
+        pechka.setTimerRele();
       }
      confFile.close();
 
@@ -145,10 +134,8 @@ void setup() {
 
         ws.onEvent(onWsEvent);
         server.addHandler(&ws);
-        //server.addHandler(&events);
 
         server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=10");
-
         server.on("/setting", HTTP_ANY, [](AsyncWebServerRequest *request){request->send(SPIFFS, "/setting.html", "text/html");});
         server.on("/settingmqtt", HTTP_ANY, [](AsyncWebServerRequest *request){request->send(SPIFFS, "/settingmqtt.html", "text/html");});
         server.on("/settingcontroller", HTTP_ANY, [](AsyncWebServerRequest *request){request->send(SPIFFS, "/settingcontroller.html", "text/html");});
@@ -158,8 +145,8 @@ void setup() {
           response->addHeader("Cache-Control", "max-age=0");
           request->send(response);
         });
-        server.on("/configpechka.json", HTTP_ANY, [](AsyncWebServerRequest *request){
-          AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/configpechka.json", "text/json");
+        server.on("/configcontroller.json", HTTP_ANY, [](AsyncWebServerRequest *request){
+          AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/configcontroller.json", "text/json");
           response->addHeader("Cache-Control", "max-age=0");
           request->send(response);
         });
@@ -168,9 +155,35 @@ void setup() {
           request->send(200, "text/html", handleSaveSettingEth(netBuf, request));
           ESP.restart();
         });
+        /*
         server.on("/savepechka", HTTP_ANY, [](AsyncWebServerRequest *request){
           request->send(200, "text/html", handleSaveSettingPechka(pechkaBuf, request));
           ESP.restart();
+        });
+        */
+        server.on("/getdata", HTTP_ANY, [](AsyncWebServerRequest *request){
+            int args = request->args();
+            for(int i=0;i<args;i++){
+              if(request->argName(i) == "controlsetting"){
+                AsyncResponseStream *response = request->beginResponseStream("application/json");
+                serializeJson(pechkaBuf, *response);
+                request->send(response);
+              }
+            }
+            request->send(404);
+        });
+        server.on("/sentdata", HTTP_ANY, [](AsyncWebServerRequest *request){
+          int args = request->args();
+          if(request->argName(0) == "controlsetting"){
+            for(int i=1;i<args;i++){
+              pechkaBuf[request->argName(i)] = request->arg(request->argName(i));
+            }
+            pechka.setTimerRele(pechkaBuf);
+            File pechkaFile = SPIFFS.open ("/configcontroller.json","w");
+            serializeJson(pechkaBuf, pechkaFile);
+            pechkaFile.close();
+          }
+          request->send(200);
         });
         server.onNotFound(onRequest);   
         /*server.on("/savemqtt", handleSaveSettingMQTT);*/
@@ -193,12 +206,12 @@ void setup() {
           Serial.println(port_mqtt);
           client.setCallback(getData);
         }
-
 //--------------------------------------HTTP server подключение----------------------------------------------------------------------------------------------------------- 
           server.begin();
           Serial.println("HTTP server started");
     }
 }
+
 void loop() {
 //-------------------------------------------------Перевод модуля в режим конфигурации путем замыкания GPIO0 на массу-----------------------------------------------------
   if((digitalRead(btn_reset) == LOW)){

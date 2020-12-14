@@ -21,9 +21,9 @@ class Pechka{
         MyTimer timer_data_json;
         MyTimer timer_send_event;
 //----------------------------------------
-        uint8_t sec_timer_temp = 1;
-        uint8_t sec_timer_events = 3;
-        uint8_t sec_timer_start_controller = 2;
+        uint8_t sec_timer_temp = 1;             //--Устанавливаем таймер оброботки датчика температуры
+        uint8_t sec_timer_events = 3;           //--Устанавливаем таймер отправки данных клиенту
+        uint8_t sec_timer_start_controller = 6; //Время перехода в рабочий режим
 
         bool count_cooler = 0;
         bool flagFire = false;
@@ -213,10 +213,10 @@ class Pechka{
             suh_cont_fotosensor_pech = suh_cont_fotosensor_in; 
             suh_cont_smog_pech = suh_cont_smog_in;
             temp_sensor_pech = temp_sensor_in;
-            ds.begin(temp_sensor_pech);                       //--Устанавливаем в ds18b20 пин 
+            ds.begin(temp_sensor_pech);                                         //--Устанавливаем в ds18b20 пин 
             timer_data_json.setValueTime(sec_timer_temp);                       //--Устанавливаем таймер оброботки датчика температуры
-            timer_send_event.setValueTime(sec_timer_events);                 //--Устанавливаем таймер отправки данных клиенту
-            timer_start_controller.setValueTime(sec_timer_start_controller);  //--Устанавливаем таймер определения включения или выключения контроллера
+            timer_send_event.setValueTime(sec_timer_events);                    //--Устанавливаем таймер отправки данных клиенту
+            timer_start_controller.setValueTime(sec_timer_start_controller);    //--Устанавливаем таймер определения включения или выключения контроллера
         }
         void startPechka()                                    //---Инициализация портов
         {
@@ -351,6 +351,22 @@ class Pechka{
             return 0;
         }
 //---------------------------Set time Rele--------------------------------------------
+        void setTimerRele(ArduinoJson6161_11::StaticJsonDocument<400u> jsonBuf){
+            setTimeRele("clear",ulong(jsonBuf["timerClear"]));      //--Установка времени работы очистителя
+            setTimeRele("cooler",ulong(jsonBuf["timerVent"]));      //--Установка времени работы кулер после отключения контроллера
+            setTimeRele("shnek",ulong(jsonBuf["timerShnek"]));      //--Установка времени работы шнек
+            setTimeRele("svecha",ulong(jsonBuf["timerSvecha"]));    //--Установка времени работы свеча
+            setMaxTempVal(ulong(jsonBuf["maxTemp"]));               //Установка максимольной температуры работы печьки
+            setDeltaTemp(double(jsonBuf["deltaTempval"]));
+        }
+        void setTimerRele(){
+            setTimeRele("clear",3);      //--Установка времени работы очистителя
+            setTimeRele("cooler",25);      //--Установка времени работы кулер после отключения контроллера
+            setTimeRele("shnek",15);      //--Установка времени работы шнек
+            setTimeRele("svecha",140);    //--Установка времени работы свеча
+            setMaxTempVal(70);               //Установка максимольной температуры работы печьки
+            setDeltaTemp(0);
+        }
         void setDeltaTemp(double delta_termistr_in){
             delta_termistr = delta_termistr_in;
         }
