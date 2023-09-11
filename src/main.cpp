@@ -17,7 +17,7 @@
 String version_prosh ="0.3b";            //---------------------Версия прошивки
 
 Pechka pechka(cooler, moto_shnek, pomp, moto_clear, svecha, fotosensor, cur_shnek, cur_pump, cur_clear, cur_svecha, suh_cont, suh_cont_fotosensor, suh_cont_smog, sensor_temp);
-MyNextion myNextion(Serial);
+//MyNextion myNextion(Serial);
 
 //--------------------------------------------------------------WachDog--------------------------------------------------------------------------------------------
 MyWachDog wachdog(whatchdog);
@@ -29,7 +29,7 @@ Bounce debouncer = Bounce();
 byte ip[4] = {192,168,1,2};
 byte gateway[4] = {192,168,1,1};
 byte subnet[4] = {255,255,255,0};
-String SSDP_Name = "SmartPalnel";
+String SSDP_Name = "pechka";
 
 //--------------------------------------------------------------переменные для MQTT--------------------------------------------------------------------------------------------
 const char* ipmqtt = "192.168.2.42";
@@ -272,31 +272,31 @@ void loop() {
   }
 
 //----------------------work Uart-------------------------------------------------------------------
-  if(myNextion.loop()){
-    if(myNextion.getDataParam() == "state"){
+  // if(myNextion.loop()){
+  //   if(myNextion.getDataParam() == "state"){
 
-      myNextion.sendDataToNextionStr("temp.txt",String(pechka.getTemp("ds"))+"C");
+  //     myNextion.sendDataToNextionStr("temp.txt",String(pechka.getTemp("ds"))+"C");
 
-      if(pechka.getStatusRele("cooler")) myNextion.sendDataToNextionVal("cooler.pic","1");
-      else myNextion.sendDataToNextionVal("cooler.pic","2");
+  //     if(pechka.getStatusRele("cooler")) myNextion.sendDataToNextionVal("cooler.pic","1");
+  //     else myNextion.sendDataToNextionVal("cooler.pic","2");
 
-      if(pechka.getStatusRele("shnek")) myNextion.sendDataToNextionVal("shnek.pic","1");
-      else myNextion.sendDataToNextionVal("shnek.pic","2");
+  //     if(pechka.getStatusRele("shnek")) myNextion.sendDataToNextionVal("shnek.pic","1");
+  //     else myNextion.sendDataToNextionVal("shnek.pic","2");
 
-      if(pechka.getStatusRele("clear")) myNextion.sendDataToNextionVal("clear.pic","1");
-      else myNextion.sendDataToNextionVal("clear.pic","2");
+  //     if(pechka.getStatusRele("clear")) myNextion.sendDataToNextionVal("clear.pic","1");
+  //     else myNextion.sendDataToNextionVal("clear.pic","2");
 
-      if(pechka.getStatusRele("svecha")) myNextion.sendDataToNextionVal("cabdle.pic","1");
-      else myNextion.sendDataToNextionVal("cabdle.pic","2");
+  //     if(pechka.getStatusRele("svecha")) myNextion.sendDataToNextionVal("cabdle.pic","1");
+  //     else myNextion.sendDataToNextionVal("cabdle.pic","2");
 
-      if(pechka.getStatusFotosensor()) myNextion.sendDataToNextionVal("controlPellets.pic","1");
-      else myNextion.sendDataToNextionVal("controlPellets.pic","2");
+  //     if(pechka.getStatusFotosensor()) myNextion.sendDataToNextionVal("controlPellets.pic","1");
+  //     else myNextion.sendDataToNextionVal("controlPellets.pic","2");
 
-      if(pechka.getStatusWorkPechka()) myNextion.sendDataToNextionVal("work.pic","1");
-      else{ 
-        myNextion.sendDataToNextionVal("controlPellets.pic","2");
-        myNextion.sendDataToNextionVal("work.pic","2");
-        }
-    }
-  }
+  //     if(pechka.getStatusWorkPechka()) myNextion.sendDataToNextionVal("work.pic","1");
+  //     else{ 
+  //       myNextion.sendDataToNextionVal("controlPellets.pic","2");
+  //       myNextion.sendDataToNextionVal("work.pic","2");
+  //       }
+  //   }
+  // }
 }

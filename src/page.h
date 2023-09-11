@@ -31,7 +31,7 @@ void handleSaveSettingMQTT(String webPage){
 }
 */
 //----------------------------------------------------------------Сохранение настроек Контроллера------------------------------------------------------------------------
-String handleSaveSettingPechka(ArduinoJson6161_11::StaticJsonDocument<400u> pechkaBuf, AsyncWebServerRequest *request){
+String handleSaveSettingPechka(StaticJsonDocument<400u> pechkaBuf, AsyncWebServerRequest *request){
   String webPage = "";
   webPage += "<html>\
  <head>\
@@ -57,7 +57,7 @@ String handleSaveSettingPechka(ArduinoJson6161_11::StaticJsonDocument<400u> pech
 }
 
 //----------------------------------------------------------------Сохранение настроек сети------------------------------------------------------------------------
-String handleSaveSettingEth(ArduinoJson6161_11::StaticJsonDocument<400u> netBuf, AsyncWebServerRequest *request){
+String handleSaveSettingEth(StaticJsonDocument<400u> netBuf, AsyncWebServerRequest *request){
   String webPage = "";
   webPage += "<html>\
  <head>\

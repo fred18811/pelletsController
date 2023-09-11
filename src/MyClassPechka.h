@@ -351,7 +351,7 @@ class Pechka{
             return 0;
         }
 //---------------------------Set time Rele--------------------------------------------
-        void setTimerRele(ArduinoJson6161_11::StaticJsonDocument<400u> jsonBuf){
+        void setTimerRele(StaticJsonDocument<400u> jsonBuf){
             setTimeRele("clear",ulong(jsonBuf["timerClear"]));      //--Установка времени работы очистителя
             setTimeRele("cooler",ulong(jsonBuf["timerVent"]));      //--Установка времени работы кулер после отключения контроллера
             setTimeRele("shnek",ulong(jsonBuf["timerShnek"]));      //--Установка времени работы шнек
